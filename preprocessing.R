@@ -6,7 +6,7 @@ expr.matrix <- read.table("Documents/master/lab_data_mining/data/colorectal_Full
                           sep='\t', header=TRUE, row.names = 1, check.names = F)
 
 
-# -------------------
+## -------------------
 # We check the range of the data to see if a log transformation is required
 
 range(expr.matrix)
