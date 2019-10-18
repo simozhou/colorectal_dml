@@ -74,8 +74,8 @@ dim(expr.matrix)
 # Remove genes that have 0 expression across all samples 
 table(rowSums(expr.matrix) == 0)
 to_keep <- rowSums(expr.matrix) == 0
-expr.matrix.nozero <- expr.matrix[!to_keep, ]
-dim(expr.matrix.nozero)
+expr.matrix <- expr.matrix[!to_keep, ]
+dim(expr.matrix)
 
 # Load metadata 
 metadata <- read.table("colorectal_clinical.tsv",
@@ -91,7 +91,28 @@ colnames(expr.matrix) <- new_names
 table(colnames(expr.matrix) %in% rownames(metadata)) # ALL 
 # Check the opposite 
 table(rownames(metadata) %in% colnames(expr.matrix)) # 9 samples in metadata are not in expression data (probably the replicates)
+# Remove the replicates samples in the metadata 
+metadata <- metadata[colnames(expr.matrix),]
+dim(metadata)
+
+# We need to select the highly variable genes to reduce the number of genes to about 5000 
+# Select the highly variable genes by variance
+idx_var <- order(apply(expr.matrix, 1, var), decreasing=TRUE)[1:5000]
+
+# Select the highly variable genes by IQR 
+library(stats)
+idx_iqr <- order(apply(expr.matrix, 1, IQR), decreasing = TRUE)[1:5000]
+
+# Look at the overlap between the top 5000 genes selected by variance and IQR 
+table(idx_var %in% idx_iqr)
+
+# Keep the the union of the genes that were selected as most variable by both variance and IQR 
+top_variable_genes <- unique(union(idx_var, idx_iqr))
+length(top_variable_genes)
+expr.matrix <- expr.matrix[top_variable_genes, ]
+dim(expr.matrix) # 5962 genes, 528 samples 
 
 # Transpose the matrix for subsequent dimensionality reduction 
-t.expr.matrix.nozero <- t(expr.matrix.nozero)
-dim(t.expr.matrix.nozero)
+t.expr.matrix <- t(expr.matrix)
+dim(t.expr.matrix)
+
