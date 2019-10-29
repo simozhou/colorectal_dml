@@ -5,7 +5,6 @@ setwd("~/Desktop/Data Mining")
 expr.matrix <- read.table("colorectal_FullExprMatrix_FPKM.tsv",
                           sep='\t', header=TRUE, row.names = 1, check.names = F)
 
-
 # -------------------
 # We check the range of the data to see if a log transformation is required
 
@@ -78,7 +77,7 @@ expr.matrix <- expr.matrix[!to_keep, ]
 dim(expr.matrix)
 
 # Load metadata 
-metadata <- read.table("colorectal_clinical.tsv",
+metadata <- read.table("../data/colorectal_clinical.tsv",
                        sep='\t', header=TRUE, row.names = 1, check.names = F)
 # Replace row names with submitter_id column to match the sample names in the expression matrix
 library(tidyverse)
@@ -116,3 +115,6 @@ dim(expr.matrix) # 5962 genes, 528 samples
 t.expr.matrix <- t(expr.matrix)
 dim(t.expr.matrix)
 
+# export the clean expression both in FPKM
+
+write.csv(expr.matrix,file = "filtered_genes_FPKM.csv",sep = '\t')
